@@ -1,2 +1,2 @@
 all: 
-	gcc -fopenmp main.c -o NBodySim
+	gcc -fopenmp main.c -o NBodySim.exe

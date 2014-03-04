@@ -13,4 +13,5 @@ Create a dataset to hold each body's
 	Mass
 
 Dataset is in the order of
+The first line of the data set has the number of bodies
 Xcoord,Ycoord,Xvelo,Yvelo,Mass
