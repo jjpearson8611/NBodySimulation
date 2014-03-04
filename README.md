@@ -12,4 +12,5 @@ Create a dataset to hold each body's
 	Y velocity	
 	Mass
 
-
+Dataset is in the order of
+Xcoord,Ycoord,Xvelo,Yvelo,Mass
