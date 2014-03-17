@@ -15,6 +15,7 @@ int numberOfBodies;
 void MoveABody(int BodySpotInArray);
 int TwoBodyCompare(int FirstBody, int SecondBody);
 void FillArrayFromFile();
+void WriteOutputToFile();
 
 //main code
 int main(int argc, char * argv[])
@@ -89,4 +90,14 @@ void FillArrayFromFile()
 		}
 	}
 	fclose(ifp);
+}
+
+void WriteOutputToFile()
+{
+	FILE * ofp;
+	ofp = fopen("output.txt", "a+");
+
+
+
+	fclose(ofp);
 }
