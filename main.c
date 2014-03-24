@@ -23,7 +23,6 @@ int main(int argc, char * argv[])
 
 	
 	//once we get the file reading part done change 4 to the first line of the file
-	BodyInfo = (float *) malloc(5 * numberOfBodies * sizeof(float));
 
 	FillArrayFromFile();	
 
@@ -33,6 +32,9 @@ int main(int argc, char * argv[])
 		MoveABody(i);
 	}
 
+	WriteOutputToFile();
+
+	return 0;
 }
 
 void MoveABody(int BodySpotInArray)
@@ -50,7 +52,6 @@ void MoveABody(int BodySpotInArray)
 
 int TwoBodyCompare(int FirstBody, int SecondBody)
 {
-
 
 
 
@@ -76,6 +77,7 @@ void FillArrayFromFile()
 		{
 			FirstRead = 0;
 			numberOfBodies = atoi(inputLine);
+			BodyInfo = (float *) malloc(5 * numberOfBodies * sizeof(float));
 		}
 		else
 		{
@@ -94,10 +96,14 @@ void FillArrayFromFile()
 
 void WriteOutputToFile()
 {
-	FILE * ofp;
-	ofp = fopen("output.txt", "a+");
-
-
-
-	fclose(ofp);
+	//FILE * ofp;
+	//ofp = fopen("output.txt", "a+");
+	int i;
+	for(i = 0; i < numberOfBodies * 5; i+=5)
+	{
+		printf("XCoord %f, YCoord %f, XVel %f, YVel %f, Mass %f\n", 
+		BodyInfo[i], BodyInfo[i + 1],BodyInfo[i + 2],
+		BodyInfo[i + 3],BodyInfo[i + 4]);
+	}
+	//fclose(ofp);
 }
