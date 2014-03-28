@@ -7,7 +7,7 @@ clean:
 	rm *.o
 
 seq:
-	gcc -fopenmp main.c
+	gcc -fopenmp main.c -lm
 	clear
 	./a.out	
 	
