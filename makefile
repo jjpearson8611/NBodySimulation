@@ -9,5 +9,4 @@ clean:
 seq:
 	gcc -fopenmp main.c -lm
 	clear
-	./a.out	
-	
+	rm main.o	

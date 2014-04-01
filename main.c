@@ -17,12 +17,22 @@ float * Accels = 0;
 int numberOfBodies;
 float G = .000000000667384f;
 
+//if zero then output to file else output to standard out
+#define outputtype 0
+
+//inputtype = 0 then from file else random
+#define inputtype 1
+
+//defines the number of random bodies
+#define NumRandBodies 4
+
 //Prototypes
 void MoveABody(int BodySpotInArray);
 int TwoBodyCompare(int FirstBody, int SecondBody);
 void FillArrayFromFile();
 void WriteOutputToFile();
 float GetDistance(float XOne, float YOne, float XTwo, float YTwo);
+void FillArrayRandomly();
 
 //main code
 int main(int argc, char * argv[])
@@ -30,9 +40,12 @@ int main(int argc, char * argv[])
 
 	
 	//once we get the file reading part done change 4 to the first line of the file
-
+	#if inputtype == 0
 	FillArrayFromFile();	
-
+	#else
+	numberOfBodies = NumRandBodies;
+	FillArrayRandomly();
+	#endif
 	int i;
 	for(i = 0; i < numberOfBodies; i++)
 	{
@@ -54,13 +67,14 @@ void MoveABody(int i)
 	float Rj;
 	float ForceI;
 	float ForceJ;
+
 	for(j = 0; j < numberOfBodies; j++)
 	{
 		if(i != j)
 		{
 			topHalf = Masses[i] * Masses[j];
-			MagDist = GetMag(XCoord[i], XCoord[j], YCoord[i], YCoord[j]);
-			Ri = GetR(XCoord[i], XCoord[j]);
+			MagDist = GetMag(XCoords[i], XCoords[j], YCoords[i], YCoords[j]);
+			Ri = GetR(XCoords[i], XCoord[j]);
 			Rj = GetR(YCoord[i], YCoord[j]);
 
 			ForceI = (G * ((topHalf / (MagDist * MagDist)) * (Ri / MagDist)));
@@ -69,7 +83,8 @@ void MoveABody(int i)
 	}
 }
 float GetR(float CoordOne, float CoordTwo)
-	return (CoordTwo - CoordONe);
+{
+	return (CoordTwo - CoordOne);
 }
 
 
@@ -82,7 +97,7 @@ float GetMag(float XOne, float YOne, float XTwo, float YTwo)
 int TwoBodyCompare(int FirstBody, int SecondBody)
 {
 
-
+return 0;
 
 }
 
@@ -106,12 +121,12 @@ void FillArrayFromFile()
 		{
 			FirstRead = 0;
 			numberOfBodies = atoi(inputLine);
-		XCoords =  (float *) calloc(numberOfBodies, sizeof(float));
-		YCoords = (float *) malloc(numberOfBodies * sizeof(float));
-		XVels   = (float *) malloc(numberOfBodies * sizeof(float));
-		YVels   = (float *) malloc(numberOfBodies * sizeof(float));
-		Masses  = (float *) malloc(numberOfBodies * sizeof(float));
-		Accels  = (float *) malloc(numberOfBodies * sizeof(float));
+			XCoords = (float *) malloc(numberOfBodies * sizeof(float));
+			YCoords = (float *) malloc(numberOfBodies * sizeof(float));
+			XVels   = (float *) malloc(numberOfBodies * sizeof(float));
+			YVels   = (float *) malloc(numberOfBodies * sizeof(float));
+			Masses  = (float *) malloc(numberOfBodies * sizeof(float));
+			Accels  = (float *) malloc(numberOfBodies * sizeof(float));
 		}
 		else
 		{
@@ -131,14 +146,44 @@ void FillArrayFromFile()
 
 void WriteOutputToFile()
 {
-	//FILE * ofp;
-	//ofp = fopen("output.txt", "a+");
+	FILE * ofp;
+	ofp = fopen("output.txt", "w");
 	int i;
-	for(i = 0; i < numberOfBodies * 5; i+=6)
+	for(i = 0; i < numberOfBodies; i++)
 	{
-		printf("XCoord %f, YCoord %f, XVel %f, YVel %f, Mass %f, Acceleration %f\n", 
+		#if outputtype == 0
+		fprintf(ofp, "XCoord %f, YCoord %f, XVel %f, YVel %f, Mass %f, Acceleration %f\n",
 		XCoords[i], YCoords[i],XVels[i],
 		YVels[i],Masses[i], Accels[i]);
+		#else
+		printf("XCoord %f, YCoord %f, XVel %f, YVel %f, Mass %f, Acceleration %f\n",
+		XCoords[i], YCoords[i],XVels[i],
+		YVels[i],Masses[i], Accels[i]);
+		#endif
 	}
-	//fclose(ofp);
+	fclose(ofp);
+}
+
+void FillArrayRandomly()
+{
+	srand(time(NULL));
+	float r;
+	int i;	
+
+	XCoords = (float *) malloc(numberOfBodies * sizeof(float));
+	YCoords = (float *) malloc(numberOfBodies * sizeof(float));
+	XVels   = (float *) malloc(numberOfBodies * sizeof(float));
+	YVels   = (float *) malloc(numberOfBodies * sizeof(float));
+	Masses  = (float *) malloc(numberOfBodies * sizeof(float));
+	Accels  = (float *) malloc(numberOfBodies * sizeof(float));
+	
+	for(i = 0; i < numberOfBodies; i++)
+	{
+		XCoords[i] = (float) rand();
+		YCoords[i] = (float) rand();
+		XVels[i] = (float) rand();
+		YVels[i] = (float) rand();
+		Masses[i] = (float) rand();
+		Accels[i] = 0;
+	}
 }
