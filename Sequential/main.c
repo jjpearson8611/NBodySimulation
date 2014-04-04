@@ -18,8 +18,17 @@ float * AccelsY = 0;
 int numberOfBodies;
 float G = .000000000667384f;
 
+//defines the number of steps
+#define numberofsteps 50
+
+//defines if we should print debugging statements 0 means yes
+#define debug 0
+
+//defines the step size
+#define stepsize 10
+
 //Defines the softening factor
-#define elipson .125
+#define elipson .0001
 
 //if zero then output to file else output to standard out
 #define outputtype 1
@@ -28,7 +37,7 @@ float G = .000000000667384f;
 #define inputtype 3
 
 //defines the number of random bodies
-#define NumRandBodies 4
+#define NumRandBodies 20
 
 //Prototypes
 void MoveABody(int BodySpotInArray);
@@ -36,8 +45,11 @@ void FillArrayFromFile();
 void WriteOutputToFile();
 float GetR(float CoordOne, float CoordTwo);
 float GetDistance(float XOne, float YOne, float XTwo, float YTwo);
-float GetMag(float XOne, float YOne, float XTwo, float YTwo);
+float GetMag(float XOne, float XTwo);
+
+///for now this gives a big planet in the middle and plants in a line going out from it
 void FillArrayRandomly();
+void UpdateBodies(int i);
 
 //main code
 int main(int argc, char * argv[])
@@ -52,19 +64,39 @@ int main(int argc, char * argv[])
 	FillArrayRandomly();
 	#endif
 	int i;
-	
+	int CompletedSteps;
+
 	//another for loop here
-
-	for(i = 0; i < numberOfBodies; i++)
+	for(CompletedSteps = 0; CompletedSteps < numberofsteps; CompletedSteps++)
 	{
-		MoveABody(i);
-	}
-
-	//udate the positions
-
+		for(i = 0; i < numberOfBodies; i++)
+		{
+			MoveABody(i);
+		}
+		for(i = 0; i < numberOfBodies; i++)
+		{
+			UpdateBodies(i);
+		}
+		#if debug = 0
+		printf("\n");
+		#endif
+	}	
 	WriteOutputToFile();
 
 	return 0;
+}
+void UpdateBodies(int i)
+{
+	//st = s0 + v0t + 1/2a0t^2
+	XCoords[i] = (XCoords[i] + (XVels[i] * stepsize) + (.5 * AccelsX[i] * pow(stepsize, 2)));
+	YCoords[i] = (YCoords[i] + (YVels[i] * stepsize) + (.5 * AccelsY[i] * pow(stepsize, 2)));
+
+	//v = v0 + a0t
+	XVels[i] = XVels[i] + (AccelsX[i] * stepsize);
+	YVels[i] = YVels[i] + (AccelsY[i] * stepsize);
+	#if debug = 0
+	printf("XCoord %e, YCoord %e, XVel %e, YVel %e, Mass %d, AccelX %e, AccelY %e\n", XCoords[i], YCoords[i],XVels[i],YVels[i],(int)Masses[i], AccelsX[i], AccelsY[i]);
+	#endif
 }
 //XCoord, YCoord, XVel, YVel, Mass
 void MoveABody(int i)
@@ -77,7 +109,8 @@ void MoveABody(int i)
 	float TotalX = 0;
 	float TotalY = 0;
 	float E = elipson * elipson;
-	float Norm;
+	float NormI;
+	float NormJ;
 
 	for(j = 0; j < numberOfBodies; j++)
 	{	
@@ -87,17 +120,21 @@ void MoveABody(int i)
 		Rj = GetR(YCoords[i], YCoords[j]);
 		
 		//determine bottom of equation
-		Norm = GetMag(XCoords[i], XCoords[j], YCoords[i], YCoords[j]);
-		Norm = Norm * Norm;
-		Norm = pow(Norm, 1.5);
+		NormJ = GetMag(YCoords[i], YCoords[j]);
+		NormJ = NormJ * NormJ + E;
+		NormJ = pow(NormJ, 1.5);
+
+		NormI = GetMag(XCoords[i], XCoords[j]);
+		NormI = NormI * NormI + E;
+		NormI = pow(NormI, 1.5);
 
 		//printf("Mass = %f, Ri = %f, Norm = %f\n", Masses[j], Ri, Norm);
 
 		//final calculation
 		//printf("Calulated X = %f", ((Masses[j] * Ri) / Norm));
 
-		TotalX += (Masses[j] * Ri) / Norm;
-		TotalY += (Masses[j] * Rj) / Norm;
+		TotalX += (Masses[j] * Ri) / NormI;
+		TotalY += (Masses[j] * Rj) / NormJ;
 
 		//printf("TotalX = %f, TotalY = %f\n", TotalX, TotalY);
 	}
@@ -110,11 +147,10 @@ float GetR(float CoordOne, float CoordTwo)
 }
 
 
-float GetMag(float XOne, float YOne, float XTwo, float YTwo)
+float GetMag(float XOne, float XTwo)
 {
 	float XDiffSqrd = pow((XTwo - XOne), 2);
-	float YDiffSqrd = pow((YTwo - YOne), 2);
-	return (float)sqrt(XDiffSqrd + YDiffSqrd);
+	return (float)sqrt(XDiffSqrd);
 }
 
 void FillArrayFromFile()
@@ -199,12 +235,17 @@ void FillArrayRandomly()
 	
 	for(i = 0; i < numberOfBodies; i++)
 	{
-		XCoords[i] = (float) rand();
-		YCoords[i] = (float) rand();
-		XVels[i] = (float) rand();
-		YVels[i] = (float) rand();
-		Masses[i] = (float) rand();
+		Masses[i] = 1;
+		XCoords[i] = 0 + .1 * i;
+		YCoords[i] = 0 + .1 * i;
+		XVels[i] = -.1 * i;	
+		YVels[i] = .1 * i;
+		if(i == 0)
+		{
+			Masses[i] = 100;
+		}
 		AccelsY[i] = 0;
 		AccelsX[i] = 0;
+		printf("XCoord %f, YCoord %f, XVel %f, YVel %f, Mass %f\n", XCoords[i], YCoords[i],XVels[i],YVels[i],Masses[i]);
 	}
 }
