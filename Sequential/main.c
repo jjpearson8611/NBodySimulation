@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
 #include <string.h>
 #include <math.h>
 
@@ -19,10 +18,10 @@ int numberOfBodies;
 float G = .000000000667384f;
 
 //defines the number of steps
-#define numberofsteps 50
+#define numberofsteps 500000
 
 //defines if we should print debugging statements 0 means yes
-#define debug 0
+#define debug 2
 
 //defines the step size
 #define stepsize 10
@@ -77,7 +76,7 @@ int main(int argc, char * argv[])
 		{
 			UpdateBodies(i);
 		}
-		#if debug = 0
+		#if debug == 0
 		printf("\n");
 		#endif
 	}	
@@ -94,7 +93,7 @@ void UpdateBodies(int i)
 	//v = v0 + a0t
 	XVels[i] = XVels[i] + (AccelsX[i] * stepsize);
 	YVels[i] = YVels[i] + (AccelsY[i] * stepsize);
-	#if debug = 0
+	#if debug == 0
 	printf("XCoord %e, YCoord %e, XVel %e, YVel %e, Mass %d, AccelX %e, AccelY %e\n", XCoords[i], YCoords[i],XVels[i],YVels[i],(int)Masses[i], AccelsX[i], AccelsY[i]);
 	#endif
 }
@@ -235,14 +234,14 @@ void FillArrayRandomly()
 	
 	for(i = 0; i < numberOfBodies; i++)
 	{
-		Masses[i] = 1;
+		Masses[i] = 1 + 10 * i;
 		XCoords[i] = 0 + .1 * i;
 		YCoords[i] = 0 + .1 * i;
 		XVels[i] = -.1 * i;	
 		YVels[i] = .1 * i;
 		if(i == 0)
 		{
-			Masses[i] = 100;
+			Masses[i] = 1000000000000;
 		}
 		AccelsY[i] = 0;
 		AccelsX[i] = 0;
