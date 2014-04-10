@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
@@ -22,11 +23,10 @@ struct timeval end;
 int numberOfBodies;
 float G = .000000000667384f;
 
-//defines the number of steps
 int numberofsteps;
 
 //defines if we should print debugging statements 0 means yes
-#define debug 2
+#define debug 1
 
 //defines the step size
 #define stepsize 10
@@ -72,15 +72,17 @@ int main(int argc, char * argv[])
 
 	numberofsteps = atoi(argv[1]);
 
-
 	gettimeofday(&start, NULL);
 	//another for loop here
 	for(CompletedSteps = 0; CompletedSteps < numberofsteps; CompletedSteps++)
 	{
+		#pragma omp parallel for num_threads(numberOfBodies) \
+		shared(XCoords, YCoords, XVels, YVels, Masses, AccelsX, AccelsY)
 		for(i = 0; i < numberOfBodies; i++)
 		{
 			MoveABody(i);
 		}
+		#pragma omp parallel for num_threads(numberOfBodies) 
 		for(i = 0; i < numberOfBodies; i++)
 		{
 			UpdateBodies(i);
@@ -89,12 +91,13 @@ int main(int argc, char * argv[])
 		printf("\n");
 		#endif
 	}	
-	gettimeofday(&end,NULL);
+	gettimeofday(&end, NULL);
 	WriteOutputToFile();
 
- 	int timeran = (((end.tv_sec - start.tv_sec) * 1000000) +(end.tv_usec - start.tv_usec));
+ int timeran = (((end.tv_sec - start.tv_sec) * 1000000) +(end.tv_usec - start.tv_usec));
 
-	printf("Time Ran Nano Seconds = %d\n", timeran);
+	printf("Time Ran Nano Seconds %d\n", timeran);
+
 	return 0;
 }
 void UpdateBodies(int i)
@@ -201,7 +204,7 @@ void FillArrayFromFile()
 			XVels[NextOpenSpot] = (float) atoi(&splitLine[4]);
 			YVels[NextOpenSpot] = (float) atoi(&splitLine[6]);
 			Masses[NextOpenSpot] = (float) atoi(&splitLine[8]);
-//			printf("XCoord %f, YCoord %f, XVel %f, YVel %f, Mass %f\n", XCoords[NextOpenSpot], YCoords[NextOpenSpot],XVels[NextOpenSpot],YVels[NextOpenSpot],Masses[NextOpenSpot]);
+			printf("XCoord %f, YCoord %f, XVel %f, YVel %f, Mass %f\n", XCoords[NextOpenSpot], YCoords[NextOpenSpot],XVels[NextOpenSpot],YVels[NextOpenSpot],Masses[NextOpenSpot]);
 			AccelsY[NextOpenSpot] = 0;
 			AccelsX[NextOpenSpot] = 0;
 			NextOpenSpot++;
