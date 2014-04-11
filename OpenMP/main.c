@@ -88,7 +88,7 @@ int main(int argc, char * argv[])
 			UpdateBodies(i);
 		}
 		#if debug == 0
-		printf("\n");
+		//printf("\n");
 		#endif
 	}	
 	gettimeofday(&end, NULL);
