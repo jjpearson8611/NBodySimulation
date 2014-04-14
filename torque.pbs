@@ -12,9 +12,9 @@ printf "above is 1 iteration"
 ./a.out 100
 printf "above is 100 iteration"
 ./a.out 1000
-printf "above is 1000 iteration "
+printf "above is 1000 iteration"
 ./a.out 10000
-printf "above is 10000 iteration "
+printf "above is 10000 iteration"
 ./a.out 100000
 printf "above is 100000 iteration "
 ./a.out 1000000
@@ -24,7 +24,7 @@ printf "above is 10000000 iteration "
 ./a.out 100000000
 printf "above is 100000000 iteration "
 ./a.out 1000000000
-printf "above is 1000000000 iteration"
+printf "above is 1000000000 iteration "
 
 cd ../OpenMP
 printf "We are now doing OpenMP\n"
