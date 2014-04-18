@@ -1,0 +1,10 @@
+#NBodySimulation
+#PBS -l nodes=1:k20
+#PBS -W GRES:gpu
+#PBS -l mem=1000mb
+#PBS -l walltime=0:30:00
+#PBS -j oe
+#PBS -N NBodySimulation
+cd /home/student/jyb0577/Git/NBodySimulation/PartialCuda
+./a.out 1000
+

@@ -82,7 +82,8 @@ int main(int argc, char * argv[])
 		{
 			MoveABody(i);
 		}
-		#pragma omp parallel for num_threads(numberOfBodies) 
+		#pragma omp parallel for num_threads(numberOfBodies) \
+		shared(XCoords, YCoords, XVels, YVels, Masses, AccelsX, AccelsY)
 		for(i = 0; i < numberOfBodies; i++)
 		{
 			UpdateBodies(i);
